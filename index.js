@@ -79,7 +79,7 @@ function parse (prefix, {author, client, content}) {
 
 function getArgs (str) {
   // trim whitespace off the end
-  str = str.replace(RE_TRIM_TRAILING_SPACES, '')
+  str = str.trimRight()
   
   // get the arguments using the magic regex
   let splitted = str.match(RE_ARG_MATCHER)
