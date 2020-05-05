@@ -116,6 +116,32 @@ const tests = {
     if (!parsed.success) return false;
     return parsed.reader.getString() === "test" && parsed.reader.getRemaining() === after;
   },
+  "Reader getRemaining after quoted arguments": () => {
+    const after = "abc 123  rFjnj6UEdWU8yznA7 !&*PH   ALVW\t% 1Ydh^j96\n\n\r\nmj dqx   9QjPVZ";
+    const parsed = parse(new Message(`!ping test "lorem ipsum"  "dolor sit amet"     ${after}`), "!");
+    if (!parsed.success) return false;
+    return (
+      parsed.reader.getString() === "test" &&
+      parsed.reader.getString() === "lorem ipsum" &&
+      parsed.reader.getString() === "dolor sit amet" &&
+      parsed.reader.getRemaining() === after
+    );
+  },
+  "Reader getRemaining after blockquote arguments": () => {
+    const after = "abc 123  rFjnj6UEdWU8yznA7 !&*PH   ALVW\t% 1Ydh^j96\n\n\r\nmj dqx   9QjPVZ";
+    const parsed = parse(
+      new Message(`!ping test "lorem ipsum" \`\`\`this is a test\`\`\`  "dolor sit amet"     ${after}`),
+      "!"
+    );
+    if (!parsed.success) return false;
+    return (
+      parsed.reader.getString() === "test" &&
+      parsed.reader.getString() === "lorem ipsum" &&
+      parsed.reader.getString() === "this is a test" &&
+      parsed.reader.getString() === "dolor sit amet" &&
+      parsed.reader.getRemaining() === after
+    );
+  },
 };
 
 let passed_sum = 0;

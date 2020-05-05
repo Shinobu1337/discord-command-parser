@@ -99,9 +99,17 @@ export class MessageArgumentReader {
   /** Gets all the remaining text and advances the index to the end (unless `peek` is `true`). */
   getRemaining(peek: boolean = false): string | null {
     if (this._index >= this.args.length) return null;
-    let remaining = this.body;
+    let remaining = this.body.trim();
     for (let i = 0; i < this._index; i++) {
-      remaining = remaining.slice(remaining.indexOf(this.args[i]) + this.args[i].length).trim();
+      if (remaining.startsWith('"') && remaining.charAt(this.args[i].length + 1) === '"') {
+        remaining = remaining.slice(this.args[i].length + 2).trim();
+      } else if (remaining.startsWith("'") && remaining.charAt(this.args[i].length + 1) === "'") {
+        remaining = remaining.slice(this.args[i].length + 2).trim();
+      } else if (remaining.startsWith("```") && remaining.slice(this.args[i].length + 3).startsWith("```")) {
+        remaining = remaining.slice(this.args[i].length + 6).trim();
+      } else {
+        remaining = remaining.slice(this.args[i].length).trim();
+      }
     }
     if (!peek) this.seek(Infinity);
     return remaining;
