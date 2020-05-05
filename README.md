@@ -36,6 +36,8 @@ client.on("message", (message) => {
     return message.reply("Pong!");
   }
 });
+
+client.login("Token").then(() => console.log("Ready!"));
 ```
 
 ---
