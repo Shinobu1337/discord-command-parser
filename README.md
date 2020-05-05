@@ -113,7 +113,7 @@ Suppose we got this message on Discord:
 
 (Assuming our `prefix` is `"?"`)
 
-This is our resulting <a href="#ParsedMessage">`ParsedMessage`</a>:
+This is our resulting `ParsedMessage`:
 
 ```js
 {
