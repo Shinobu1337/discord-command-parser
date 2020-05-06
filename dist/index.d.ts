@@ -14,7 +14,7 @@ interface BasicMessage {
         } | null;
     };
 }
-interface SuccessfulParsedMessage<T extends BasicMessage> {
+export interface SuccessfulParsedMessage<T extends BasicMessage> {
     readonly success: true;
     /** The prefix that the user provided. */
     readonly prefix: string;
@@ -29,7 +29,7 @@ interface SuccessfulParsedMessage<T extends BasicMessage> {
     /** The message. */
     readonly message: T;
 }
-interface FailedParsedMessage<T extends BasicMessage> {
+export interface FailedParsedMessage<T extends BasicMessage> {
     readonly success: false;
     /** A description of why the parsing failed. */
     readonly error: string;

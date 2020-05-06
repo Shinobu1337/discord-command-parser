@@ -7,7 +7,7 @@ export const version = "1.4.0";
 /**
  * The base message type with all the properties needed by the library.
  */
-interface BasicMessage {
+export interface BasicMessage {
   content: string;
   author: {
     bot: boolean;
@@ -20,7 +20,7 @@ interface BasicMessage {
   };
 }
 
-interface SuccessfulParsedMessage<T extends BasicMessage> {
+export interface SuccessfulParsedMessage<T extends BasicMessage> {
   readonly success: true;
   /** The prefix that the user provided. */
   readonly prefix: string;
@@ -36,7 +36,7 @@ interface SuccessfulParsedMessage<T extends BasicMessage> {
   readonly message: T;
 }
 
-interface FailedParsedMessage<T extends BasicMessage> {
+export interface FailedParsedMessage<T extends BasicMessage> {
   readonly success: false;
   /** A description of why the parsing failed. */
   readonly error: string;
