@@ -16,7 +16,7 @@ interface BasicMessage {
   client: {
     user: {
       id: string;
-    };
+    } | null;
   };
 }
 
@@ -155,7 +155,7 @@ export function parse<T extends BasicMessage>(
   const prefixes = Array.isArray(prefix) ? [...prefix] : [prefix];
 
   if (message.author.bot && !options.allowBots) return fail("Message sent by a bot account");
-  if (message.author.id === message.client.user.id && !options.allowSelf)
+  if (message.author.id === message.client.user?.id && !options.allowSelf)
     return fail("Message sent from client's account");
   if (!message.content) return fail("Message body empty");
 

@@ -115,14 +115,14 @@ var MessageArgumentReader = /** @class */ (function () {
 exports.MessageArgumentReader = MessageArgumentReader;
 function parse(message, prefix, options) {
     if (options === void 0) { options = {}; }
-    var _a;
+    var _a, _b;
     function fail(error) {
         return { success: false, error: error, message: message };
     }
     var prefixes = Array.isArray(prefix) ? __spreadArrays(prefix) : [prefix];
     if (message.author.bot && !options.allowBots)
         return fail("Message sent by a bot account");
-    if (message.author.id === message.client.user.id && !options.allowSelf)
+    if (message.author.id === ((_a = message.client.user) === null || _a === void 0 ? void 0 : _a.id) && !options.allowSelf)
         return fail("Message sent from client's account");
     if (!message.content)
         return fail("Message body empty");
@@ -143,7 +143,7 @@ function parse(message, prefix, options) {
     if (!options.allowSpaceBeforeCommand && /^\s/.test(remaining))
         return fail("Space before command name");
     remaining = remaining.trim();
-    var command = (_a = remaining.match(/^[^\s]+/i)) === null || _a === void 0 ? void 0 : _a[0];
+    var command = (_b = remaining.match(/^[^\s]+/i)) === null || _b === void 0 ? void 0 : _b[0];
     if (!command)
         return fail("Could not match a command");
     remaining = remaining.slice(command.length).trim();

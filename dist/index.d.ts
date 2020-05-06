@@ -11,7 +11,7 @@ interface BasicMessage {
     client: {
         user: {
             id: string;
-        };
+        } | null;
     };
 }
 interface SuccessfulParsedMessage<T extends BasicMessage> {
