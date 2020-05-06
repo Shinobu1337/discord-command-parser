@@ -2,7 +2,7 @@ export declare const version = "1.4.0";
 /**
  * The base message type with all the properties needed by the library.
  */
-interface BasicMessage {
+export interface BasicMessage {
     content: string;
     author: {
         bot: boolean;
@@ -60,4 +60,3 @@ export declare class MessageArgumentReader {
     seek(amount?: number): this;
 }
 export declare function parse<T extends BasicMessage>(message: T, prefix: string | string[], options?: Partial<ParserOptions>): ParsedMessage<T>;
-export {};
