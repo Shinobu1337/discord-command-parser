@@ -1,17 +1,20 @@
 {
   "name": "discord-command-parser",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "Basic parsing for messages received with discord.js",
   "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
     "test": "node test/index.js",
-    "prePublish": "npm run build && npm test"
+    "prepublish": "npm run build && npm test"
   },
   "keywords": [
     "discord",
-    "discord.js"
+    "discord.js",
+    "commands",
+    "discord-bot",
+    "bot"
   ],
   "author": {
     "name": "Brenden Campbell",
@@ -26,10 +29,10 @@
     "url": "https://github.com/campbellbrendene/discord-command-parser/issues"
   },
   "homepage": "https://github.com/campbellbrendene/discord-command-parser#readme",
-  "types": "./dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "devDependencies": {
-    "chalk": "^4.0.0",
+    "chalk": "^4.1.0",
     "rimraf": "^3.0.2",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.7"
   }
 }

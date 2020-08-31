@@ -22,14 +22,8 @@ const tests = {
   "Ignore messages sent by bots": () => {
     return parse(new Message("!ping", true), "!").success === false;
   },
-  "Ignore messages sent by self": () => {
-    return parse(new Message("!ping", false, true), "!").success === false;
-  },
   "Explicit allow bots": () => {
     return parse(new Message("!ping", true), "!", { allowBots: true }).success === true;
-  },
-  "Explicit allow self": () => {
-    return parse(new Message("!ping", false, true), "!", { allowSelf: true }).success === true;
   },
   "No-arg commands": () => {
     return parse(new Message("!ping"), "!").command === "ping";
@@ -104,6 +98,11 @@ const tests = {
     const parsed = parse(new Message("!ping <@000000000000000000> <@!0000000000000000000>"), "!");
     if (!parsed.success) return false;
     return parsed.reader.getUserID() === "000000000000000000" && parsed.reader.getUserID() === "0000000000000000000";
+  },
+  "Reader getRoleID": () => {
+    const parsed = parse(new Message("!ping <@&000000000000000000> <@&0000000000000000000>"), "!");
+    if (!parsed.success) return false;
+    return parsed.reader.getRoleID() === "000000000000000000" && parsed.reader.getRoleID() === "0000000000000000000";
   },
   "Reader getChannelID": () => {
     const parsed = parse(new Message("!ping <#000000000000000000>"), "!");

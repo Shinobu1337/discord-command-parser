@@ -48,7 +48,6 @@ export type ParsedMessage<T extends BasicMessage> = FailedParsedMessage<T> | Suc
 
 export interface ParserOptions {
   allowBots: boolean;
-  allowSelf: boolean;
   allowSpaceBeforeCommand: boolean;
   ignorePrefixCase: boolean;
 }
@@ -125,6 +124,16 @@ export class MessageArgumentReader {
     return null;
   }
 
+  /** Advances the index (unless `peek` is `true`) and tries to parse a valid role ID or mention and returns the ID, if found. */
+  getRoleID(peek: boolean = false): string | null {
+    const str = this.getString(peek);
+    if (str === null) return null;
+    if (/^\d{17,19}$/.test(str)) return str;
+    const match = str.match(/^\<@&?(\d{17,19})\>$/);
+    if (match && match[1]) return match[1];
+    return null;
+  }
+
   /** Advances the index (unless `peek` is `true`) and tries to parse a valid channel ID or mention and returns the ID, if found. */
   getChannelID(peek: boolean = false): string | null {
     const str = this.getString(peek);
@@ -155,8 +164,7 @@ export function parse<T extends BasicMessage>(
   const prefixes = Array.isArray(prefix) ? [...prefix] : [prefix];
 
   if (message.author.bot && !options.allowBots) return fail("Message sent by a bot account");
-  if (message.author.id === message.client.user?.id && !options.allowSelf)
-    return fail("Message sent from client's account");
+
   if (!message.content) return fail("Message body empty");
 
   let matchedPrefix: string | null = null;

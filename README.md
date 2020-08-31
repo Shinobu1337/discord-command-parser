@@ -1,133 +1,213 @@
 # discord-command-parser
 
-Basic parsing for messages received with [Discord.js](https://github.com/discordjs/discord.js).
+Basic parsing for messages received with [discord.js](https://github.com/discordjs/discord.js).
 
 [![npm](https://img.shields.io/npm/dt/discord-command-parser.svg?style=for-the-badge)](https://npmjs.com/package/discord-command-parser)
 [![npm](https://img.shields.io/npm/v/discord-command-parser.svg?style=for-the-badge)](https://npmjs.com/package/discord-command-parser)
 
-# Installation
-
-With npm:
-
-```shell
-$ npm install --save discord-command-parser
-```
-
-With Yarn:
+## Installation
 
 ```shell
 $ yarn add discord-command-parser
 ```
 
-# Quick Example
+or, with NPM
 
-```js
-const discord = require("discord.js");
-const parser = require("discord-command-parser");
+```shell
+$ npm i discord-command-parser
+```
 
-const prefix = "?";
-const client = new discord.Client();
+## Example
 
-client.on("message", (message) => {
-  const parsed = parser.parse(message, prefix);
+```typescript
+import { parse } from "discord-command-parser";
+// or: const { parse } = require("discord-command-parser");
+
+bot.on("message", async (mesasge) => {
+  // call parse function
+  const parsed = parse(message, "!", { allowSpaceBeforeCommand: true });
+
+  // check for valid command
   if (!parsed.success) return;
 
-  if (parsed.command === "ping") {
-    return message.reply("Pong!");
-  }
+  // handle command
+  if (parsed.command === "ping") return message.reply("Pong!");
+});
+```
+
+## Usage
+
+---
+
+### `parse(message, prefix [, options]): ParsedMessage`
+
+Parses a message for commands. `prefix` may be a string or an array of strings
+for command prefixes that the command must start with.
+
+By default, this function checks to make sure that the message author is not a bot account. This can be overridden by setting `options.allowBots` to false.
+
+#### `options`
+
+- `allowBots: boolean = false` - By default, this function checks to make sure
+  that the message author is not a bot account. Setting this to `true` will disable
+  this check.
+- `allowSpaceBeforeCommand: boolean = false` - Set this to `true` if you want the parser to be more forgiving of command prefixes (e.g. allowing "`! ping`" to work as well as "`!ping`" when the prefix is "`!`").
+- `ignorePrefixCase: boolean = false` - If `true`, "`A!ping`" will behave the
+  same as "`a!ping`". The bot will ignore the case of the prefix when checking for
+  a match.
+
+---
+
+### `ParsedMessage`
+
+Represents the result of message parsing. This can be represent either a
+success or failure state. Check the `success` property to determine.
+
+#### Common properties (success/failure)
+
+- `success: boolean` - Whether the parsing succeeded and the message appears to be
+  a valid command. Always remember to check this.
+- `error: string | undefined` - On failure, this will detail which check failed
+  for debugging purposes.
+- `message: Message` - The message that was parsed.
+
+> **Note:** In the event of a failure, only the `success`, `error`, and `message` properties are defined.
+
+#### Successful-only properties
+
+- `prefix: string` - The prefix that the command starts with. Useful when using an array of prefixes.
+- `command: string` - The command name that was parsed from the message
+  (e.g. `"ping"` for a message of "`!ping`").
+- `arguments: string[]` - The arguments (whitespace-delimited) that were passed
+  after the command name. This also processes quoted parameters to allow for
+  whitespace inside arguments (e.g. `["hello", "foo bar"]` for the message
+  "`!say hello "foo bar"`").
+
+  Valid quote types are single (`'`), double (`"`), and codeblock (<code>```</code>).
+
+  Note that Inline code (<code>`</code>) is not supported.
+
+- `body: string` - The body of the message immediately following the command name (e.g. `"hello world"` for the message "`!say hello world`").
+- `reader: MessageArgumentReader` - The `MessageArgumentReader` instance for this
+  command. See the `MessageArgumentReader` section below.
+
+> **TypeScript Note:** a `ParsedMessage` can represent either an invalid result
+> (`FailedParsedMessage`) or a successful result (`SuccessfulParsedMessage`). The
+> result of `parse()` should be picked up by TypeScript just by checking the
+> `parsed.success` value.
+>
+> Additionally, the `ParsedMessage` classes are generic. Pass the discord.js
+> `Message` type to the generic field (e.g. `ParsedMessage<Message>`).
+>
+> If you are using a library other than discord.js, ensure that the Message type
+> you use adheres to the `BasicMessage` interface in the source code.
+
+---
+
+### `MessageArgumentReader`
+
+An object-oriented way of sequentially parsing and checking arguments and is usually preferable over the `ParsedMessage.arguments` array.
+
+For all "get" methods, the `peek` parameter will not advance to the next argument
+and will just return the current argument.
+
+#### `getString(peek: boolean = false): string | null`
+
+Returns the next argument (or null if exhausted)
+
+#### `getRemaining(peek: boolean = false): string | null`
+
+Gets all the remaining text. This advances the index to the end unless
+`peek` is `true`.
+
+#### `getUserID(peek: boolean = false): string | null`
+
+Advances the index (unless `peek` is `true`), and **then** tries to
+parse a valid user ID or user mention and returns the ID, if found,
+otherwise null.
+
+#### `getRoleID(peek: boolean = false): string | null`
+
+Similar to `getUserID`, but using role mention format (`<@&123...>`).
+
+#### `getChannelID(peek: boolean = false): string | null`
+
+Similar to `getUserID`, but using channel mention format (`<#123...>`).
+
+#### `seek(amount: number = 1): this`
+
+Safely increments or decrements the index. Useful for skipping arguments.
+
+---
+
+## Contributing
+
+If you wish to submit a PR with new or fixed feautres, make sure to
+create/modify test cases in `tests/index.js` and ensure that `npm test`
+works.
+
+Please adhere to the code style that is managed by [Prettier](https://prettier.io/).
+If you use Visual Studio Code, you can install the [Prettier extenstion](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode).
+
+## Examples (TypeScript)
+
+Basic usage:
+
+```typescript
+import { parse } from "discord-command-parser";
+import { Client, Message } from "discord.js";
+
+const bot = new Client();
+
+bot.on("message", async (message) => {
+  const parsed = parse(message, "!", {
+    allowSpaceBeforeCommand: true,
+  });
+
+  if (!parsed.success) return;
+
+  if (message.command === "ping") return message.reply("Pong!");
 });
 
-client.login("Token").then(() => console.log("Ready!"));
+bot.login("token");
 ```
 
----
+`MessageArgumentReader` - "send" command
 
-_This project is written using [TypeScript](http://typescriptlang.org/). If you use a compatible
-IDE, you should get documentation, autocompletion, and error-checking included when you use this
-library._
+```typescript
+// ...
+bot.on("message", async (message) => {
+  // ...
+  if (parsed.command === "send" || parsed.command === "dm") {
+    const recipient = parsed.reader.getUserID();
+    const content = parsed.reader.getRemaining();
 
-# Documentation
+    if (!recipient || !content) {
+      return message.reply(`Usage: ${parsed.prefix}${parsed.command} <user> <message>`);
+    }
 
-## **See [the source code](src/index.ts) for more details and comments.**
+    try {
+      const user = await bot.users.fetch(recipient);
+    } catch {
+      return message.reply("Invalid recipient!");
+    }
 
-## `parse(message, prefix, [options])`
+    try {
+      await user.send(content);
+    } catch {
+      return message.reply("Could not DM user.");
+    }
 
-> Returns a `ParsedMessage`.
-
-- `message` **_Message_**; the Discord.js Message to parse.
-- `prefix` **_string | string[]_**; the prefix(es) to check for in commands.
-- `options` **_object, optional_**; additional configuration.
-  - `options.allowBots` **_boolean_**; whether to parse messages sent by bot accounts (`message.author.bot`).
-  - `options.allowSelf` **_boolean_**; whether to parse messages sent by the client account.
-  - `options.allowSpaceBeforeCommand` **_boolean_**; whether to allow a space (or multiple) between the prefix and the command name.
-  - `options.ignorePrefixCase` **_boolean_**; whether to ignore the case of the prefix used. Note that the prefix returned in the `ParsedMessage` will be set to the matching element in the prefix argument, not the prefix in the message, in the event of mismatching case.
-
-## `ParsedMessage`
-
-Used internally and returned by `parse`.
-
-Note: if `suceess` is `false`, only `success`, `error`, and `message` are defined.
-
-### Properties:
-
-- `success`: **_boolean_**
-  > Whether the message could be parsed and appears to be a valid command.
-- `prefix`: **_string_**
-  > The prefix that matched. Useful when providing an array of prefixes to `parse`.
-- `command`: **_string_**
-  > The command that was parsed from the message. For example, the message `!ping` would have a `command` value of `ping`.
-- `arguments`: **_string[]_**
-  > **Consider using `reader` for a more advanced way of getting arguments.**
-  >
-  > An array of whitespace or quote delimited arguments that were passed to the command. For example, the command
-  >
-  > ```
-  > !ban Clyde 7d "repeated spam of \"no u\" after warning"
-  > ```
-  >
-  > would have an `arguments` value of:
-  >
-  > ```js
-  > ["Clyde", "7d", 'repeated spam of "no u" after warning'];
-  > ```
-- `reader`: **MessageArgumentReader**
-  > Use the `getString()`, `getUserID()`, `getChannelID()` and `getRemaining()`
-  > methods to get command arguments in a more object-oriented fashion. All
-  > methods return `null` when the argument array is exhausted.
-- `error`: **_string_**
-  > If `success` is `false`, a description of why the message was rejected. Otherwise empty.
-- `body`: **_string_**
-  > The unparsed body of the message immediately following the `command`.
-- `message`: **_Message_**
-  > Redundant to the message that was passed to `parse`.
-
----
-
-# Example Result
-
-Suppose we got this message on Discord:
-
-```
-?remindme "collect daily reward" 24h urgent
+    return;
+  }
+});
+// ...
 ```
 
-(Assuming our `prefix` is `"?"`)
+## License
 
-This is our resulting `ParsedMessage`:
+This program is licensed under the **MIT License**. See the `LICENSE` file
+in the root of the project or https://opensource.org/licenses/MIT for more
+info.
 
-```js
-{
-  "success": true,
-  "prefix": "?",
-  "command": "remindme",
-  "arguments": [
-    "collect daily reward",
-    "24h",
-    "urgent"
-  ],
-  "error": "",
-  "code": 0,
-  "body": "\"collect daily reward \" 24h urgent",
-  "reader": [Object: MessageArgumentReader]
-}
-```
+Copyright &copy; 2020 Brenden Campbell.
