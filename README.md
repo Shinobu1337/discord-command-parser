@@ -23,7 +23,7 @@ $ npm i discord-command-parser
 import { parse } from "discord-command-parser";
 // or: const { parse } = require("discord-command-parser");
 
-bot.on("message", async (mesasge) => {
+bot.on("message", async (message) => {
   // call parse function
   const parsed = parse(message, "!", { allowSpaceBeforeCommand: true });
 
