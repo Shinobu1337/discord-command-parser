@@ -11,7 +11,6 @@ export interface BasicMessage {
   content: string;
   author: {
     bot: boolean;
-    id: string;
   };
 }
 
