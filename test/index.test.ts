@@ -1,4 +1,4 @@
-import { parse, BasicMessage, SuccessfulParsedMessage } from "../src/index";
+import { parse, BasicMessage, version } from "../src/index";
 
 class StubMessage implements BasicMessage {
   content: string;
@@ -9,6 +9,11 @@ class StubMessage implements BasicMessage {
     this.author = { bot: isBot };
   }
 }
+
+test("Exported version number matches package version", () => {
+  const pjson = require("../package.json");
+  expect(version).toBe(pjson.version);
+});
 
 test("Ignore messages sent by bots", () => {
   const result = parse(new StubMessage("!ping", true), "!");

@@ -1,6 +1,6 @@
 {
   "name": "discord-command-parser",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Basic parsing for messages received with discord.js",
   "main": "dist/index.js",
   "scripts": {
@@ -12,6 +12,7 @@
   "keywords": [
     "discord",
     "discord.js",
+    "eris",
     "commands",
     "discord-bot",
     "bot"

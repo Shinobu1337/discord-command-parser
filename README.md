@@ -1,6 +1,6 @@
 # discord-command-parser
 
-Basic parsing for messages received with [discord.js](https://github.com/discordjs/discord.js).
+Basic parsing for messages received with [discord.js](https://github.com/discordjs/discord.js) OR [eris](https://github.com/abalabahaha/eris).
 
 [![npm](https://img.shields.io/npm/dt/discord-command-parser.svg?style=for-the-badge)](https://npmjs.com/package/discord-command-parser)
 [![npm](https://img.shields.io/npm/v/discord-command-parser.svg?style=for-the-badge)](https://npmjs.com/package/discord-command-parser)
@@ -17,21 +17,29 @@ or, with NPM
 $ npm i discord-command-parser
 ```
 
-## Example
+## Examples
+
+Discord.js
 
 ```typescript
 import { parse } from "discord-command-parser";
-// or: const { parse } = require("discord-command-parser");
 
 bot.on("message", async (message) => {
-  // call parse function
   const parsed = parse(message, "!", { allowSpaceBeforeCommand: true });
-
-  // check for valid command
   if (!parsed.success) return;
-
-  // handle command
   if (parsed.command === "ping") return message.reply("Pong!");
+});
+```
+
+Eris
+
+```typescript
+import { parse } from "discord-command-parser";
+
+bot.on("messageCreate", async (message) => {
+  const parsed = parse(message, "!", { allowSpaceBeforeCommand: true });
+  if (!parsed.success) return;
+  if (parsed.command === "ping") return bot.createMessage(message.channelID, "Pong!");
 });
 ```
 
@@ -96,10 +104,10 @@ success or failure state. Check the `success` property to determine.
 > result of `parse()` should be picked up by TypeScript just by checking the
 > `parsed.success` value.
 >
-> Additionally, the `ParsedMessage` classes are generic. Pass the discord.js
+> Additionally, the `ParsedMessage` classes are generic. Pass the discord.js or eris
 > `Message` type to the generic field (e.g. `ParsedMessage<Message>`).
 >
-> If you are using a library other than discord.js, ensure that the Message type
+> If you are using a library other than discord.js or eris, ensure that the Message type
 > you use adheres to the `BasicMessage` interface in the source code.
 
 ---

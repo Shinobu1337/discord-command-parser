@@ -2,7 +2,7 @@
 // https://github.com/campbellbrendene/discord-command-parser
 // Licensed under the MIT license. See "LICENSE" in the root of this project.
 
-export const version = "1.4.0";
+export const version = "1.5.1";
 
 /**
  * The base message type with all the properties needed by the library.
