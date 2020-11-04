@@ -13,11 +13,6 @@ export interface BasicMessage {
     bot: boolean;
     id: string;
   };
-  client: {
-    user: {
-      id: string;
-    } | null;
-  };
 }
 
 export interface SuccessfulParsedMessage<T extends BasicMessage> {

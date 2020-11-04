@@ -1,16 +1,10 @@
 // This file tests discord-command-parser against a few pseudo-real-life messages
 
 class Message {
-  constructor(content, is_bot = false, is_self = false) {
+  constructor(content, is_bot = false) {
     this.content = content;
     this.author = {
       bot: is_bot,
-      id: is_self ? "0001" : "0002",
-    };
-    this.client = {
-      user: {
-        id: "0001",
-      },
     };
   }
 }
