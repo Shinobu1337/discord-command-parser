@@ -119,26 +119,37 @@ An object-oriented way of sequentially parsing and checking arguments and is usu
 For all "get" methods, the `peek` parameter will not advance to the next argument
 and will just return the current argument.
 
-#### `getString(peek: boolean = false): string | null`
+A `Validator<T>` is an optional function which accepts a parameter of type `T` and returns a boolean indicative of whether the value is valid.
+If a `Validator` returns `false`, then the invoking `get___` function will return `null`.
+
+#### `getString(peek: boolean = false, v?: Validator<string>): string | null`
 
 Returns the next argument (or null if exhausted)
 
-#### `getRemaining(peek: boolean = false): string | null`
+#### `getInt(peek: boolean = false, v?: Validator<number>): number | null`
+
+Returns the next (safe) integer (or null if exhausted)
+
+#### `getFloat(peek: boolean = false, v?: Validator<number>): number | null`
+
+Returns the next (safe down to 2 decimal places) float (or null if exhausted)
+
+#### `getRemaining(peek: boolean = false, v?: Validator<string>): string | null`
 
 Gets all the remaining text. This advances the index to the end unless
 `peek` is `true`.
 
-#### `getUserID(peek: boolean = false): string | null`
+#### `getUserID(peek: boolean = false, v?: Validator<string>): string | null`
 
 Advances the index (unless `peek` is `true`), and **then** tries to
 parse a valid user ID or user mention and returns the ID, if found,
 otherwise null.
 
-#### `getRoleID(peek: boolean = false): string | null`
+#### `getRoleID(peek: boolean = false, v?: Validator<string>): string | null`
 
 Similar to `getUserID`, but using role mention format (`<@&123...>`).
 
-#### `getChannelID(peek: boolean = false): string | null`
+#### `getChannelID(peek: boolean = false, v?: Validator<string>): string | null`
 
 Similar to `getUserID`, but using channel mention format (`<#123...>`).
 

@@ -112,6 +112,20 @@ test("Reader", () => {
   result = parse(new StubMessage("!ping <#000000000000000000>"), "!");
   expect(result.success && result.reader.getChannelID()).toBe("000000000000000000");
 
+  result = parse(new StubMessage("!test 123.56789 12345678 70368744177663.91"), "!");
+  expect(result.success && [result.reader.getFloat(), result.reader.getInt(), result.reader.getFloat()]).toEqual([
+    123.56789,
+    12345678,
+    70368744177663.91,
+  ]);
+
+  result = parse(new StubMessage("!test -123.56789 -12345678 -70368744177663.91"), "!");
+  expect(result.success && [result.reader.getFloat(), result.reader.getInt(), result.reader.getFloat()]).toEqual([
+    -123.56789,
+    -12345678,
+    -70368744177663.91,
+  ]);
+
   const after = "abc 123  rFjnj6UEdWU8yznA7 !&*PH   ALVW\t% 1Ydh^j96\n\n\r\nmj dqx   9QjPVZ";
 
   result = parse(new StubMessage(`!ping test ${after}`), "!");

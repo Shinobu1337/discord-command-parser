@@ -2,7 +2,7 @@
 // https://github.com/campbellbrendene/discord-command-parser
 // Licensed under the MIT license. See "LICENSE" in the root of this project.
 
-export const version = "1.5.1";
+export const version = "1.5.2";
 
 /**
  * The base message type with all the properties needed by the library.
@@ -72,6 +72,8 @@ function getArguments(body: string): string[] {
   return args;
 }
 
+type Validator<T> = (value: T) => boolean;
+
 export class MessageArgumentReader {
   args: string[];
   body: string;
@@ -84,9 +86,10 @@ export class MessageArgumentReader {
   }
 
   /** Returns the next argument (or null if exhausted) and advances the index (unless `peek` is `true`). */
-  getString(peek: boolean = false): string | null {
+  getString(peek: boolean = false, v?: Validator<string>): string | null {
     if (this._index >= this.args.length) return null;
-    return this.args[peek ? this._index : this._index++];
+    const value = this.args[peek ? this._index : this._index++];
+    return v ? (v(value) ? value : null) : value;
   }
 
   /** Gets all the remaining text and advances the index to the end (unless `peek` is `true`). */
@@ -108,33 +111,60 @@ export class MessageArgumentReader {
     return remaining;
   }
 
+  /**
+   * Advances the index (unless `peek` is `true`) and tries to parse an integer
+   * using `Number.parseInt`, returning `null` if NaN.
+   */
+  getInt(peek: boolean = false, v?: Validator<number>): number | null {
+    const str = this.getString(peek);
+    if (str === null) return null;
+
+    const parsed = Number.isNaN(str) || !/^-?\d+$/g.test(str) ? null : Number.parseInt(str);
+    if (parsed === null || parsed > Number.MAX_SAFE_INTEGER || parsed < Number.MIN_SAFE_INTEGER) return null;
+    return v ? (v(parsed) ? parsed : null) : parsed;
+  }
+
+  /**
+   * Advances the index (unless `peek` is `true`) and tries to parse a floating-point number
+   * (with a maximum guaranteed precision of 2 decimal places)
+   * using `Number.parseFloat`, returning `null` if NaN or out of range.
+   */
+  getFloat(peek: boolean = false, v?: Validator<number>): number | null {
+    const str = this.getString(peek);
+    if (str === null) return null;
+
+    const parsed = Number.isNaN(str) || !/^-?\d*(\.\d+)?$/.test(str) ? null : Number.parseFloat(str);
+    if (parsed === null || parsed > 703_687_441_77_664 || parsed < -703_687_441_77_664) return null;
+    return v ? (v(parsed) ? parsed : null) : parsed;
+  }
+
   /** Advances the index (unless `peek` is `true`) and tries to parse a valid user ID or mention and returns the ID, if found. */
-  getUserID(peek: boolean = false): string | null {
+  getUserID(peek: boolean = false, v?: Validator<string>): string | null {
     const str = this.getString(peek);
     if (str === null) return null;
     if (/^\d{17,19}$/.test(str)) return str;
     const match = str.match(/^\<@!?(\d{17,19})\>$/);
-    if (match && match[1]) return match[1];
+    if (match && match[1]) return v ? (v(match[1]) ? match[1] : null) : match[1];
     return null;
   }
 
   /** Advances the index (unless `peek` is `true`) and tries to parse a valid role ID or mention and returns the ID, if found. */
-  getRoleID(peek: boolean = false): string | null {
+  getRoleID(peek: boolean = false, v?: Validator<string>): string | null {
     const str = this.getString(peek);
     if (str === null) return null;
     if (/^\d{17,19}$/.test(str)) return str;
     const match = str.match(/^\<@&?(\d{17,19})\>$/);
-    if (match && match[1]) return match[1];
+    if (match && match[1]) return v ? (v(match[1]) ? match[1] : null) : match[1];
     return null;
   }
 
   /** Advances the index (unless `peek` is `true`) and tries to parse a valid channel ID or mention and returns the ID, if found. */
-  getChannelID(peek: boolean = false): string | null {
+  getChannelID(peek: boolean = false, v?: Validator<string>): string | null {
     const str = this.getString(peek);
     if (str === null) return null;
     if (/^\d{17,19}$/.test(str)) return str;
     const match = str.match(/^\<#(\d{17,19})\>$/);
-    if (match && match[1]) return match[1];
+    if (match && match[1]) return v ? (v(match[1]) ? match[1] : null) : match[1];
     return null;
   }
 
