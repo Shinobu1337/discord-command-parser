@@ -229,4 +229,4 @@ This program is licensed under the **MIT License**. See the `LICENSE` file
 in the root of the project or https://opensource.org/licenses/MIT for more
 info.
 
-Copyright &copy; 2020 Brenden Campbell.
+Copyright &copy; 2020-2021 Brenden Campbell.
